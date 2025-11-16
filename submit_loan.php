@@ -1,39 +1,31 @@
 <?php
 session_start();
+require_once 'config/database.php';
+
 if (!isset($_SESSION['user_email'])) {
     header('Location: login.php');
     exit();
 }
 
-// Mock client data (as you have)
-$mockClients = [
-    ['full_name' => 'Kurt Realisan', 'email' => 'kurtrealisan@gmail.com', 'account_number' => '1001234567', 'contact_number' => '09123456789', 'job' => 'Data Analyst', 'monthly_salary' => 20000],
-    ['full_name' => 'Jiro Pinto', 'email' => 'jiropinto@gmail.com', 'account_number' => '1002345678', 'contact_number' => '09234567890', 'job' => 'Programmer', 'monthly_salary' => 50000],
-    ['full_name' => 'Angelo Gualva', 'email' => 'angelogualva@gmail.com', 'account_number' => '1003456789', 'contact_number' => '09345678901', 'job' => 'Front End Developer', 'monthly_salary' => 10000],
-    ['full_name' => 'Mike Beringuela', 'email' => 'mikeberinguela@gmail.com', 'account_number' => '1004567890', 'contact_number' => '09456789012', 'job' => 'Project Manager', 'monthly_salary' => 70000],
-    ['full_name' => 'Jestony Malunes', 'email' => 'jestonymalunes@gmail.com', 'account_number' => '1005678901', 'contact_number' => '09567890123', 'job' => 'Backend Developer', 'monthly_salary' => 20000],
-    ['full_name' => 'Clarence Carpeso', 'email' => 'clarencecarpeso@gmail.com', 'account_number' => '1006789012', 'contact_number' => '09678901234', 'job' => 'Crossfire Developer', 'monthly_salary' => 20000],
-];
-
-$currentUser = null;
-foreach ($mockClients as $client) {
-    if ($client['email'] === $_SESSION['user_email']) {
-        $currentUser = $client;
-        break;
-    }
-}
+// Get current user from database
+$currentUser = getUserByEmail($_SESSION['user_email']);
 
 if (!$currentUser) {
     die("User not found.");
 }
 
-// DB
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db = "loan_system";
-$conn = new mysqli($host, $user, $pass, $db);
-if ($conn->connect_error) {
+// Map database fields to expected format
+$currentUser['full_name'] = $currentUser['display_name'] ?? $currentUser['full_name'];
+$currentUser['account_number'] = $currentUser['account_number'] ?? '';
+$currentUser['contact_number'] = $currentUser['contact_number'] ?? '';
+// Note: job and monthly_salary are not in bank_users table
+// You may need to add these fields to the database or use defaults
+$currentUser['job'] = 'Not Specified'; // Default value
+$currentUser['monthly_salary'] = 0; // Default value
+
+// Get database connection
+$conn = getDBConnection();
+if (!$conn) {
     die("DB Connection failed.");
 }
 

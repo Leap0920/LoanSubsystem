@@ -19,7 +19,7 @@ if (!in_array($type, ['approved', 'rejected'])) {
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "loan_system";
+$db = "bankingdb";
 $conn = new mysqli($host, $user, $pass, $db);
 if ($conn->connect_error) {
     echo json_encode(['error' => 'DB error: ' . $conn->connect_error]);

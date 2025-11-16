@@ -452,7 +452,7 @@ if (!isset($_SESSION['user_email'])) {
 
     <section class="stats">
       <div class="card">
-        <p class="card-title">Active Loans</p>
+        <p class="card-title">Approved Loans</p>
         <p class="card-value" id="activeLoansCount">0</p>
       </div>
 
@@ -655,7 +655,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         let dateA, dateB;
         
         // Get the most relevant date for each loan
-        if (a.status === 'Active' && a.approved_at) {
+        if (a.status === 'Approved' && a.approved_at) {
           dateA = new Date(a.approved_at);
         } else if (a.status === 'Rejected' && a.rejected_at) {
           dateA = new Date(a.rejected_at);
@@ -663,7 +663,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           dateA = new Date(a.created_at || 0);
         }
         
-        if (b.status === 'Active' && b.approved_at) {
+        if (b.status === 'Approved' && b.approved_at) {
           dateB = new Date(b.approved_at);
         } else if (b.status === 'Rejected' && b.rejected_at) {
           dateB = new Date(b.rejected_at);
@@ -697,7 +697,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       loans.forEach((loan) => {
         // Count by status
-        if (loan.status === 'Active') {
+        if (loan.status === 'Approved') {
           activeCount++;
           notificationCount++;
           // Track earliest due date from next_payment_due
@@ -720,7 +720,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         // Format status for display
         let displayStatus = loan.status;
         let statusStyle = '';
-        if (loan.status === 'Active') {
+        if (loan.status === 'Approved') {
           displayStatus = 'Approved';
           statusStyle = 'style="color: #4CAF50; font-weight: bold;"';
         } else if (loan.status === 'Rejected') {
@@ -731,7 +731,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         // Format next payment due
         let nextPayment = '-';
-        if (loan.status === 'Active' && loan.next_payment_due) {
+        if (loan.status === 'Approved' && loan.next_payment_due) {
           const date = new Date(loan.next_payment_due);
           nextPayment = date.toLocaleDateString('en-US', { 
             year: 'numeric', 
@@ -808,7 +808,7 @@ function openNotificationModal() {
   const modalBody = document.getElementById('notificationModalBody');
   
   // Filter loans that are approved or rejected
-  const notifications = allLoans.filter(loan => loan.status === 'Active' || loan.status === 'Rejected');
+  const notifications = allLoans.filter(loan => loan.status === 'Approved' || loan.status === 'Rejected');
   
   if (notifications.length === 0) {
     modalBody.innerHTML = `
@@ -821,7 +821,7 @@ function openNotificationModal() {
     let notificationHTML = '<div class="notification-header-text"><h3>📢 You have new notifications</h3></div>';
     
     notifications.forEach((loan) => {
-      const isApproved = loan.status === 'Active';
+      const isApproved = loan.status === 'Approved';
       const statusClass = isApproved ? 'approved' : 'rejected';
       const statusIcon = isApproved ? '✅' : '❌';
       const statusText = isApproved ? 'Approved' : 'Rejected';

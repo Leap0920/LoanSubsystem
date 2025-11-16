@@ -1,28 +1,19 @@
 <?php
+require_once 'config/database.php';
+
 // Get user initials from session (only if logged in)
 $userInitials = 'U';
 $displayName = 'Guest';
 
 if (isset($_SESSION['user_email'])) {
-    // Find full name from mock data
-    $mockClients = [
-        ['full_name' => 'Kurt Realisan', 'email' => 'kurtrealisan@gmail.com'],
-        ['full_name' => 'Jiro Pinto', 'email' => 'jiropinto@gmail.com'],
-        ['full_name' => 'Angelo Gualva', 'email' => 'angelogualva@gmail.com'],
-        ['full_name' => 'Mike Beringuela', 'email' => 'mikeberinguela@gmail.com'],
-        ['full_name' => 'Jestony Malunes', 'email' => 'jestonymalunes@gmail.com'],
-        ['full_name' => 'Clarence Carpeso', 'email' => 'clarencecarpeso@gmail.com'],
-    ];
-
-    foreach ($mockClients as $client) {
-        if ($client['email'] === $_SESSION['user_email']) {
-            $displayName = $client['full_name'];
-            $nameParts = explode(' ', $client['full_name']);
-            $firstInitial = $nameParts[0][0] ?? '';
-            $lastInitial = end($nameParts)[0] ?? '';
-            $userInitials = strtoupper($firstInitial . $lastInitial);
-            break;
-        }
+    $user = getUserByEmail($_SESSION['user_email']);
+    
+    if ($user) {
+        $displayName = $user['display_name'] ?? $user['full_name'] ?? 'Guest';
+        $nameParts = explode(' ', $displayName);
+        $firstInitial = $nameParts[0][0] ?? '';
+        $lastInitial = end($nameParts)[0] ?? '';
+        $userInitials = strtoupper($firstInitial . $lastInitial);
     }
 }
 ?>
@@ -185,7 +176,7 @@ nav a:hover::after {
         </div>
       </li>
       <li><a href="index.php">Loans</a></li>
-      <li><a href="#about">About Us</a></li>
+      <li><a href="/bank-system/evergreen-marketing/about.php">About Us</a></li>
     </ul>
   </nav>
 

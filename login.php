@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once 'config/database.php';
 
 // 🔒 If already logged in, redirect to correct dashboard
 if (isset($_SESSION['user_email'])) {
@@ -12,29 +13,6 @@ if (isset($_SESSION['user_email'])) {
     }
 }
 
-// Mock client data (from your original)
-$mockClients = [
-    ['full_name' => 'Kurt Realisan', 'email' => 'kurtrealisan@gmail.com', 'password' => password_hash('password123', PASSWORD_DEFAULT), 'role' => 'client'],
-    ['full_name' => 'Jiro Pinto', 'email' => 'jiropinto@gmail.com', 'password' => password_hash('password123', PASSWORD_DEFAULT), 'role' => 'client'],
-    ['full_name' => 'Angelo Gualva', 'email' => 'angelogualva@gmail.com', 'password' => password_hash('password123', PASSWORD_DEFAULT), 'role' => 'client'],
-    ['full_name' => 'Mike Beringuela', 'email' => 'mikeberinguela@gmail.com', 'password' => password_hash('password123', PASSWORD_DEFAULT), 'role' => 'client'],
-    ['full_name' => 'Jestony Malunes', 'email' => 'jestonymalunes@gmail.com', 'password' => password_hash('password123', PASSWORD_DEFAULT), 'role' => 'client'],
-    ['full_name' => 'Clarence Carpeso', 'email' => 'clarencecarpeso@gmail.com', 'password' => password_hash('password123', PASSWORD_DEFAULT), 'role' => 'client'],
-];
-
-// ✅ Admin: Jerome Malunes (as requested)
-$mockAdmins = [
-    [
-        'full_name' => 'Jerome Malunes',
-        'email' => 'jeromemalunes@gmail.com',
-        'password' => password_hash('admin123', PASSWORD_DEFAULT),
-        'role' => 'admin',
-        'loan_officer_id' => 'LO-0123'
-    ]
-];
-
-$allUsers = array_merge($mockClients, $mockAdmins);
-
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -43,24 +21,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $selectedRole = $_POST['role'] ?? 'client';
 
     $user = null;
-    foreach ($allUsers as $u) {
-        if ($u['email'] === $email) {
-            $user = $u;
-            break;
-        }
+    
+    // Verify based on selected role
+    if ($selectedRole === 'admin') {
+        $user = verifyAdminPassword($email, $password);
+    } else {
+        $user = verifyUserPassword($email, $password);
     }
 
-    if ($user && password_verify($password, $user['password'])) {
+    if ($user) {
         // 🔑 Role must match
         if ($user['role'] !== $selectedRole) {
             $error = "Invalid role selection. Please select the correct role.";
         } else {
             $_SESSION['user_email'] = $user['email'];
-            $_SESSION['user_name'] = $user['full_name'];
+            $_SESSION['user_name'] = $user['display_name'] ?? $user['full_name'];
             $_SESSION['user_role'] = $user['role'];
+            $_SESSION['user_id'] = $user['id'];
             
             if ($user['role'] === 'admin') {
-                $_SESSION['loan_officer_id'] = $user['loan_officer_id'];
+                $_SESSION['loan_officer_id'] = $user['loan_officer_id'] ?? 'LO-0123';
                 header('Location: adminindex.php');
                 exit();
             } else {

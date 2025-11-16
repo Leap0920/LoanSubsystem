@@ -2,7 +2,7 @@
 require_once('fpdf/fpdf.php');
 
 // Input validation
-if (!isset($_GET['type']) || !in_array($_GET['type'], ['all', 'active', 'pending', 'rejected', 'closed'])) {
+if (!isset($_GET['type']) || !in_array($_GET['type'], ['all', 'approved', 'pending', 'rejected', 'closed'])) {
     echo json_encode(['error' => 'Invalid report type']);
     exit();
 }
@@ -25,7 +25,7 @@ $current_admin = $mockAdmins[0];
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "loan_system";
+$db = "bankingdb";
 $conn = new mysqli($host, $user, $pass, $db);
 if ($conn->connect_error) {
     echo json_encode(['error' => 'DB error: ' . $conn->connect_error]);
@@ -35,7 +35,7 @@ if ($conn->connect_error) {
 // Build WHERE clause
 $where_clause = '';
 switch ($report_type) {
-    case 'active': $where_clause = "WHERE status = 'Active'"; break;
+    case 'approved': $where_clause = "WHERE status = 'Approved'"; break;
     case 'pending': $where_clause = "WHERE status = 'Pending'"; break;
     case 'rejected': $where_clause = "WHERE status = 'Rejected'"; break;
     case 'closed': $where_clause = "WHERE status = 'Closed'"; break;
@@ -68,7 +68,7 @@ if ($result) {
 $conn->close();
 
 // ✅ COUNT loans by status for Notes section
-$counts = ['Active' => 0, 'Pending' => 0, 'Rejected' => 0, 'Closed' => 0];
+$counts = ['Approved' => 0, 'Pending' => 0, 'Rejected' => 0, 'Closed' => 0];
 foreach ($loans as $loan) {
     $status = ucfirst(strtolower(trim($loan['status'])));
     if (array_key_exists($status, $counts)) {
@@ -140,7 +140,7 @@ $pdf->SetFont('Arial', '', 10);
 $notes = [
     "Total Paid and Remaining Balance are based on current system records.",
     "This report was generated on " . date('F j, Y \a\t g:i A') . ".",
-    "Approved Loans: " . $counts['Active'],
+    "Approved Loans: " . $counts['Approved'],
     "Rejected Loans: " . $counts['Rejected'],
     "Pending Loans: " . $counts['Pending']
 ];

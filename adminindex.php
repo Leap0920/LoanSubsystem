@@ -5,7 +5,7 @@ include 'admin_header.php';
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "loan_system";
+$db = "bankingdb";
 
 $conn = new mysqli($host, $user, $pass, $db);
 if ($conn->connect_error) {
@@ -13,7 +13,7 @@ if ($conn->connect_error) {
 }
 
 // Count loan statuses
-$counts = ['Active' => 0, 'Pending' => 0, 'Rejected' => 0, 'Closed' => 0];
+$counts = ['Approved' => 0, 'Pending' => 0, 'Rejected' => 0, 'Closed' => 0];
 $statusResult = $conn->query("SELECT status, COUNT(*) as total FROM loan_applications GROUP BY status");
 if ($statusResult) {
   while ($row = $statusResult->fetch_assoc()) {
@@ -41,12 +41,12 @@ if ($statusResult) {
     <h1>Loan Dashboard</h1>
 
     <div class="cards">
-      <div class="card" onclick="filterLoans('Active')">
+      <div class="card" onclick="filterLoans('Approved')">
         <div class="card-header">
-          <img src="images/activeloanicon.png" alt="Active Loan" class="icon-img">
-          <p>Active Loans</p>
+          <img src="images/activeloanicon.png" alt="Approved Loan" class="icon-img">
+          <p>Approved Loans</p>
         </div>
-        <h3><?= $counts['Active'] ?></h3>
+        <h3><?= $counts['Approved'] ?></h3>
       </div>
       <div class="card" onclick="filterLoans('Pending')">
         <div class="card-header">
@@ -73,7 +73,7 @@ if ($statusResult) {
 
     <div style="margin-bottom: 20px; text-align: center;">
       <button onclick="generateReport('all')" class="btn btn-primary">Generate All Loans Report</button>
-      <button onclick="generateReport('active')" class="btn btn-success">Generate Active Loans Report</button>
+      <button onclick="generateReport('approved')" class="btn btn-success">Generate Approved Loans Report</button>
       <button onclick="generateReport('pending')" class="btn btn-warning">Generate Pending Loans Report</button>
       <button onclick="generateReport('rejected')" class="btn btn-danger">Generate Rejected Loans Report</button>
     </div>
@@ -102,7 +102,7 @@ if ($statusResult) {
               $applied_date = date("m/d/Y", strtotime($row['created_at'] ?? 'now'));
               $applied_time = date("h:i A", strtotime($row['created_at'] ?? 'now'));
               $statusClass = strtolower($row['status']);
-              $statusStyle = ($row['status'] === 'Active') ? 'font-weight:bold;' : '';
+              $statusStyle = ($row['status'] === 'Approved') ? 'font-weight:bold;' : '';
           ?>
               <tr data-status="<?= htmlspecialchars($row['status']) ?>">
                 <td><?= htmlspecialchars($row['id']) ?></td>
@@ -271,7 +271,7 @@ if ($statusResult) {
           const approvalInfo = document.getElementById('approval-info');
           const rejectionInfo = document.getElementById('rejection-info');
 
-          if (data.status === 'Active' && data.approved_by) {
+          if (data.status === 'Approved' && data.approved_by) {
             document.getElementById('modal-approved-by').textContent = data.approved_by;
             document.getElementById('modal-approved-at').textContent = new Date(data.approved_at).toLocaleString();
             approvalInfo.style.display = 'block';

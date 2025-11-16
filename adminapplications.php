@@ -5,7 +5,7 @@ include 'admin_header.php';
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "loan_system";
+$db = "bankingdb";
 
 $conn = new mysqli($host, $user, $pass, $db);
 if ($conn->connect_error) {
@@ -13,7 +13,7 @@ if ($conn->connect_error) {
 }
 
 // Count statuses (for future use if needed)
-$counts = ['Active' => 0, 'Pending' => 0, 'Rejected' => 0, 'Closed' => 0];
+$counts = ['Approved' => 0, 'Pending' => 0, 'Rejected' => 0, 'Closed' => 0];
 $statusResult = $conn->query("SELECT status, COUNT(*) as total FROM loan_applications GROUP BY status");
 if ($statusResult) {
   while ($row = $statusResult->fetch_assoc()) {
@@ -340,7 +340,7 @@ if ($statusResult) {
       const remarks = prompt('Enter approval remarks (optional):', '');
       if (remarks === null) return;
       if (confirm('Approve this loan?')) {
-        updateLoanStatus(currentLoanId, 'Active', remarks);
+        updateLoanStatus(currentLoanId, 'Approved', remarks);
       }
     }
 

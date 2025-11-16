@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_email']) || ($_SESSION['user_role'] ?? '') !== 'admin
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "loan_system";
+$db = "bankingdb";
 
 $conn = new mysqli($host, $user, $pass, $db);
 if ($conn->connect_error) {

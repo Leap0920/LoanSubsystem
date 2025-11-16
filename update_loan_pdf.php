@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_email'])) {
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "loan_system";
+$db = "bankingdb";
 $conn = new mysqli($host, $user, $pass, $db);
 if ($conn->connect_error) {
     exit(json_encode(['error' => 'DB error']));
