@@ -5,7 +5,7 @@ include 'admin_header.php';
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "bankingdb";
+$db = "BankingDB";
 
 $conn = new mysqli($host, $user, $pass, $db);
 if ($conn->connect_error) {

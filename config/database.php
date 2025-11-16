@@ -1,14 +1,14 @@
 <?php
 /**
  * Database Configuration for LoanSubsystem
- * Connects to bankingdb.bank_customers table
+ * Connects to BankingDB.customers table
  */
 
 // Database configuration
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('DB_NAME', 'bankingdb');
+define('DB_NAME', 'BankingDB');
 
 /**
  * Get database connection
